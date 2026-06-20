@@ -50,7 +50,7 @@ async function main() {
     const bad = await rawPost("/api/auth/login", "application/json", "{bad json");
     ok(bad.status === 400, "malformed JSON -> 400 (not 500)");
     ok(bad.json?.error?.code === "INVALID_JSON", "malformed JSON has INVALID_JSON code");
-    ok(typeof bad.json?.error?.message === "string" && bad.json.error.message.length > 0, "malformed JSON localized message present");
+    ok(bad.json?.error?.message === "El cuerpo de la solicitud no es un JSON válido", "malformed JSON message localized to es");
 
     // city exact match, accent-insensitive (no wildcard injection)
     const wild = await get("/api/providers?city=%25&pageSize=5");

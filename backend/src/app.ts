@@ -19,8 +19,10 @@ export function createApp() {
       credentials: false,
     }),
   );
-  app.use(express.json({ limit: "1mb" }));
+  // Resolve locale before the body parser so a malformed/oversized body still
+  // produces a localized 400/413 (the parser error fires before later middleware).
   app.use(locale);
+  app.use(express.json({ limit: "1mb" }));
 
   app.get("/health", (_req, res) => res.json({ ok: true }));
 
