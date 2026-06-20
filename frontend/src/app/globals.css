@@ -1,0 +1,172 @@
+@import "tailwindcss";
+
+/* Manual dark mode via a .dark class on <html> (driven by next-themes). */
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  --background: #ffffff;
+  --foreground: #0b1411;
+  --card: #ffffff;
+  --card-foreground: #0b1411;
+  --popover: #ffffff;
+  --popover-foreground: #0b1411;
+  --subtle: #f6faf8;
+  --muted: #eef3f0;
+  --muted-foreground: #5b6b64;
+  --primary: #059669;
+  --primary-foreground: #ffffff;
+  --secondary: #0d9488;
+  --secondary-foreground: #ffffff;
+  --accent: #ecfdf5;
+  --accent-foreground: #047857;
+  --border: #e2e8e4;
+  --input: #d9e3dd;
+  --ring: #059669;
+  --success: #16a34a;
+  --success-foreground: #ffffff;
+  --warning: #d97706;
+  --warning-foreground: #ffffff;
+  --danger: #dc2626;
+  --danger-foreground: #ffffff;
+  --radius: 0.7rem;
+}
+
+.dark {
+  --background: #06100c;
+  --foreground: #f1f7f4;
+  --card: #0c1814;
+  --card-foreground: #f1f7f4;
+  --popover: #0c1814;
+  --popover-foreground: #f1f7f4;
+  --subtle: #0a1410;
+  --muted: #15211c;
+  --muted-foreground: #9bb0a6;
+  --primary: #10b981;
+  --primary-foreground: #03130d;
+  --secondary: #14b8a6;
+  --secondary-foreground: #03130d;
+  --accent: #11271f;
+  --accent-foreground: #6ee7b7;
+  --border: #1d2c25;
+  --input: #233830;
+  --ring: #10b981;
+  --success: #22c55e;
+  --success-foreground: #052e16;
+  --warning: #f59e0b;
+  --warning-foreground: #1c1206;
+  --danger: #ef4444;
+  --danger-foreground: #1c0606;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-subtle: var(--subtle);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-danger: var(--danger);
+  --color-danger-foreground: var(--danger-foreground);
+  --radius-lg: var(--radius);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-sm: calc(var(--radius) - 4px);
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system, sans-serif;
+}
+
+@layer base {
+  * {
+    border-color: var(--border);
+  }
+  /* Tailwind v4 leaves buttons with the default arrow cursor; restore pointer. */
+  button:not(:disabled),
+  [role="button"]:not([aria-disabled="true"]),
+  label[for],
+  summary {
+    cursor: pointer;
+  }
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+  body {
+    background-color: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  ::selection {
+    background-color: color-mix(in oklab, var(--primary) 22%, transparent);
+  }
+}
+
+/* Refined, unobtrusive scrollbars */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+*::-webkit-scrollbar-thumb {
+  background-color: var(--border);
+  border-radius: 9999px;
+}
+
+/* ---------------------------------------------------------------------------
+   Leaflet theming. The map container + controls + popups inherit the app
+   surface tokens so the OSM map sits cleanly in both light and dark themes.
+--------------------------------------------------------------------------- */
+.leaflet-container {
+  font: inherit;
+  background: var(--muted);
+}
+.leaflet-control-zoom a,
+.leaflet-bar a {
+  background-color: var(--card) !important;
+  color: var(--foreground) !important;
+  border-color: var(--border) !important;
+}
+.leaflet-control-zoom a:hover,
+.leaflet-bar a:hover {
+  background-color: var(--muted) !important;
+}
+.leaflet-control-attribution {
+  background: color-mix(in oklab, var(--card) 80%, transparent) !important;
+  color: var(--muted-foreground) !important;
+}
+.leaflet-control-attribution a {
+  color: var(--primary) !important;
+}
+.leaflet-popup-content-wrapper,
+.leaflet-popup-tip {
+  background: var(--card) !important;
+  color: var(--card-foreground) !important;
+  box-shadow: 0 8px 24px -12px rgb(0 0 0 / 0.35) !important;
+}
+.leaflet-popup-content {
+  margin: 0;
+}
+.leaflet-popup-close-button {
+  color: var(--muted-foreground) !important;
+}
+/* Tone the raster tiles down in dark mode so the map reads as a dark surface. */
+.dark .leaflet-tile-pane {
+  filter: brightness(0.78) invert(1) contrast(0.85) hue-rotate(180deg) saturate(0.7);
+}

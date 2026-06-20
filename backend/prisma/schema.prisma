@@ -1,0 +1,154 @@
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "rhel-openssl-3.0.x"]
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+enum Role {
+  CLIENT
+  PROVIDER
+  ADMIN
+}
+
+enum ProviderStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  SUSPENDED
+}
+
+enum Availability {
+  AVAILABLE
+  BUSY
+  BY_APPOINTMENT
+}
+
+model User {
+  id            String         @id @default(cuid())
+  email         String         @unique
+  passwordHash  String
+  name          String
+  role          Role           @default(CLIENT)
+  locale        String         @default("en")
+  provider      Provider?
+  reviews       Review[]
+  favorites     Favorite[]
+  refreshTokens RefreshToken[]
+  auditLogs     AuditLog[]     @relation("ActorLogs")
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+}
+
+model Category {
+  id        String             @id @default(cuid())
+  slug      String             @unique
+  nameEn    String
+  nameEs    String
+  namePt    String
+  icon      String             @default("briefcase")
+  sortOrder Int                @default(0)
+  providers ProviderCategory[]
+  createdAt DateTime           @default(now())
+}
+
+model Provider {
+  id              String             @id @default(cuid())
+  userId          String             @unique
+  user            User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  slug            String             @unique
+  businessName    String
+  headline        String
+  about           String
+  services        String[]
+  avatarUrl       String?
+  coverUrl        String?
+  photos          String[]
+  phone           String?
+  whatsapp        String? // E.164 digits only, no + or spaces
+  addressLine     String?
+  city            String
+  region          String?
+  country         String             @default("")
+  lat             Float
+  lng             Float
+  availability    Availability       @default(BY_APPOINTMENT)
+  status          ProviderStatus     @default(PENDING)
+  rejectionReason String?
+  featured        Boolean            @default(false)
+  ratingAvg       Float              @default(0)
+  reviewCount     Int                @default(0)
+  views           Int                @default(0)
+  categories      ProviderCategory[]
+  reviews         Review[]
+  favorites       Favorite[]
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+
+  @@index([status])
+  @@index([city])
+  @@index([featured])
+}
+
+model ProviderCategory {
+  providerId String
+  categoryId String
+  provider   Provider @relation(fields: [providerId], references: [id], onDelete: Cascade)
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@id([providerId, categoryId])
+  @@index([categoryId])
+}
+
+model Review {
+  id         String   @id @default(cuid())
+  providerId String
+  provider   Provider @relation(fields: [providerId], references: [id], onDelete: Cascade)
+  clientId   String
+  client     User     @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  rating     Int // 1..5
+  comment    String
+  createdAt  DateTime @default(now())
+
+  @@unique([providerId, clientId])
+  @@index([providerId])
+}
+
+model Favorite {
+  id         String   @id @default(cuid())
+  clientId   String
+  client     User     @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  providerId String
+  provider   Provider @relation(fields: [providerId], references: [id], onDelete: Cascade)
+  createdAt  DateTime @default(now())
+
+  @@unique([clientId, providerId])
+}
+
+model RefreshToken {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tokenHash String   @unique
+  revoked   Boolean  @default(false)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  actorId   String?
+  actor     User?    @relation("ActorLogs", fields: [actorId], references: [id], onDelete: SetNull)
+  action    String
+  targetId  String?
+  meta      Json?
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+}
