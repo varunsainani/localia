@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { Menu, X, ChevronDown, LogOut, LayoutDashboard, Shield, Search } from "lucide-react";
+import { Menu, X, ChevronDown, LogOut, LayoutDashboard, Shield, Search, Heart } from "lucide-react";
 import { Logo } from "./logo";
 import { LanguageToggle } from "./language-toggle";
 import { ThemeToggle } from "./theme-toggle";
@@ -81,6 +81,16 @@ export function Navbar() {
                     <p className="truncate text-sm font-medium">{user.name}</p>
                     <p className="truncate text-xs text-muted-foreground">{user.email}</p>
                   </div>
+                  {user.role === "CLIENT" && (
+                    <Link
+                      href="/favorites"
+                      onClick={() => setMenuOpen(false)}
+                      className="mt-1 flex items-center gap-2 rounded-md px-2.5 py-1.5 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                    >
+                      <Heart className="h-4 w-4" />
+                      {t("favorites")}
+                    </Link>
+                  )}
                   {user.role === "PROVIDER" && (
                     <Link
                       href="/dashboard"
@@ -161,6 +171,15 @@ export function Navbar() {
             >
               {t("categories")}
             </Link>
+            {user?.role === "CLIENT" && (
+              <Link
+                href="/favorites"
+                onClick={() => setMobileOpen(false)}
+                className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium text-foreground hover:bg-muted"
+              >
+                <Heart className="h-4 w-4" /> {t("favorites")}
+              </Link>
+            )}
             {user?.role === "PROVIDER" && (
               <Link
                 href="/dashboard"

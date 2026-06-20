@@ -1,4 +1,5 @@
 import type { Category, Provider, Review, User, AuditLog, ProviderCategory } from "@prisma/client";
+import { t } from "../i18n";
 
 // --- Locale helpers --------------------------------------------------------
 
@@ -92,7 +93,7 @@ export function providerDetail(
     whatsapp: provider.whatsapp,
     addressLine: provider.addressLine,
     createdAt: provider.createdAt,
-    reviews: (provider.reviews ?? []).map(publicReview),
+    reviews: (provider.reviews ?? []).map((r) => publicReview(r, locale)),
   };
 }
 
@@ -115,12 +116,12 @@ export function ownerProvider(provider: ProviderWithCategories, locale: string) 
 
 // --- Reviews ---------------------------------------------------------------
 
-export function publicReview(review: ReviewWithClient) {
+export function publicReview(review: ReviewWithClient, locale: string) {
   return {
     id: review.id,
     rating: review.rating,
     comment: review.comment,
-    clientName: review.client?.name ?? "Anonymous",
+    clientName: review.client?.name ?? t(locale, "reviews.anonymous"),
     createdAt: review.createdAt,
   };
 }

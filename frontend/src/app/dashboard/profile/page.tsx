@@ -36,7 +36,7 @@ const emptyForm: ProviderInput = {
   country: "",
   lat: 0,
   lng: 0,
-  availability: "available",
+  availability: "BY_APPOINTMENT",
   avatarUrl: null,
   coverUrl: null,
   photos: [],
@@ -76,7 +76,7 @@ export default function ProfileEditor() {
           country: provider.country ?? "",
           lat: provider.lat ?? 0,
           lng: provider.lng ?? 0,
-          availability: provider.availability ?? "available",
+          availability: provider.availability ?? "BY_APPOINTMENT",
           avatarUrl: provider.avatarUrl ?? null,
           coverUrl: provider.coverUrl ?? null,
           photos: provider.photos ?? [],
@@ -134,7 +134,7 @@ export default function ProfileEditor() {
 
   if (loading) return <LoadingBlock />;
 
-  const availabilities: Availability[] = ["available", "busy", "unavailable"];
+  const availabilities: Availability[] = ["AVAILABLE", "BUSY", "BY_APPOINTMENT"];
 
   return (
     <form onSubmit={save} className="space-y-6 pb-12">

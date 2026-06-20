@@ -143,7 +143,7 @@ async function apiUpload<T = unknown>(path: string, file: File): Promise<T> {
 
 export type Role = "CLIENT" | "PROVIDER" | "ADMIN";
 export type ProviderStatus = "PENDING" | "APPROVED" | "REJECTED" | "SUSPENDED";
-export type Availability = "available" | "busy" | "unavailable";
+export type Availability = "AVAILABLE" | "BUSY" | "BY_APPOINTMENT";
 export type SortOption = "relevance" | "rating" | "distance" | "newest";
 
 export interface User {

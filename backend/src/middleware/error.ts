@@ -37,6 +37,25 @@ export function errorHandler(err: unknown, req: Request, res: Response, _next: N
     return res.status(err.status).json({ error: body });
   }
 
+  // Body-parser (express.json) errors: malformed/oversized bodies are client
+  // errors, not server faults — surface a localized 400/413 instead of a 500.
+  if (err && typeof err === "object") {
+    const bodyErr = err as { type?: string; body?: unknown };
+    if (bodyErr.type === "entity.too.large") {
+      return res
+        .status(413)
+        .json({ error: { message: t(locale, "errors.common.payloadTooLarge"), code: "PAYLOAD_TOO_LARGE" } });
+    }
+    if (
+      bodyErr.type === "entity.parse.failed" ||
+      (err instanceof SyntaxError && "body" in bodyErr)
+    ) {
+      return res
+        .status(400)
+        .json({ error: { message: t(locale, "errors.common.invalidJson"), code: "INVALID_JSON" } });
+    }
+  }
+
   console.error(err);
   return res
     .status(500)

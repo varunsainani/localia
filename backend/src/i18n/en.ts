@@ -15,6 +15,8 @@ const en: Record<string, string> = {
   "errors.common.requestFailed": "Request failed",
   "errors.common.internalServerError": "Internal server error",
   "errors.common.notFound": "Not found",
+  "errors.common.invalidJson": "The request body is not valid JSON",
+  "errors.common.payloadTooLarge": "The request body is too large",
 
   // --- Providers ----------------------------------------------------------
   "errors.provider.notFound": "Provider not found",
@@ -36,6 +38,9 @@ const en: Record<string, string> = {
 
   // --- Favorites ----------------------------------------------------------
   "errors.favorite.notFound": "Favorite not found",
+
+  // --- Reviews (display) --------------------------------------------------
+  "reviews.anonymous": "Anonymous",
 
   // --- Uploads ------------------------------------------------------------
   "errors.upload.notConfigured": "Uploads are not configured on this server",

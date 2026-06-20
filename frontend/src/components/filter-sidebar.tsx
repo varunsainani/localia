@@ -117,9 +117,9 @@ export function FilterSidebar({
           onChange={(e) => onChange({ availability: e.target.value as Availability | "" })}
         >
           <option value="">{t("anyAvailability")}</option>
-          <option value="available">{ta("available")}</option>
-          <option value="busy">{ta("busy")}</option>
-          <option value="unavailable">{ta("unavailable")}</option>
+          <option value="AVAILABLE">{ta("AVAILABLE")}</option>
+          <option value="BUSY">{ta("BUSY")}</option>
+          <option value="BY_APPOINTMENT">{ta("BY_APPOINTMENT")}</option>
         </Select>
       </div>
 

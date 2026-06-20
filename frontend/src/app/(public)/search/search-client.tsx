@@ -177,6 +177,7 @@ export function SearchClient() {
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6">
+      <h1 className="sr-only">{t("title")}</h1>
       {/* Search + controls */}
       <div className="flex flex-col gap-3">
         <div className="relative">

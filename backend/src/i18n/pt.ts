@@ -15,6 +15,8 @@ const pt: Record<string, string> = {
   "errors.common.requestFailed": "A solicitação falhou",
   "errors.common.internalServerError": "Erro interno do servidor",
   "errors.common.notFound": "Não encontrado",
+  "errors.common.invalidJson": "O corpo da solicitação não é um JSON válido",
+  "errors.common.payloadTooLarge": "O corpo da solicitação é muito grande",
 
   // --- Providers ----------------------------------------------------------
   "errors.provider.notFound": "Prestador não encontrado",
@@ -36,6 +38,9 @@ const pt: Record<string, string> = {
 
   // --- Favorites ----------------------------------------------------------
   "errors.favorite.notFound": "Favorito não encontrado",
+
+  // --- Reviews (display) --------------------------------------------------
+  "reviews.anonymous": "Anônimo",
 
   // --- Uploads ------------------------------------------------------------
   "errors.upload.notConfigured": "O envio de arquivos não está configurado neste servidor",

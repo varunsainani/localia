@@ -4,12 +4,16 @@ import { asyncHandler } from "../lib/async-handler";
 import prisma from "../lib/prisma";
 import { HttpError } from "../lib/http-error";
 import { providerCard, providerDetail, categoryName } from "../lib/serialize";
+import { t } from "../i18n";
 import { haversineSql } from "../lib/geo";
 
 // --- Query parsing ---------------------------------------------------------
 
 const SORTS = ["relevance", "rating", "distance", "newest"] as const;
 type Sort = (typeof SORTS)[number];
+
+const AVAILABILITIES = ["AVAILABLE", "BUSY", "BY_APPOINTMENT"] as const;
+type Availability = (typeof AVAILABILITIES)[number];
 
 function num(v: unknown): number | undefined {
   if (v == null || v === "") return undefined;
@@ -30,8 +34,13 @@ export const searchProviders = asyncHandler(async (req, res) => {
   const city = typeof req.query.city === "string" ? req.query.city.trim() : "";
   const region = typeof req.query.region === "string" ? req.query.region.trim() : "";
   const minRating = num(req.query.minRating);
-  const availability =
+  // Validate against the known enum set; an unknown value is treated as unset
+  // (ignored) rather than cast into the Postgres enum, which would 500.
+  const rawAvailability =
     typeof req.query.availability === "string" ? req.query.availability.trim() : "";
+  const availability: Availability | "" = AVAILABILITIES.includes(rawAvailability as Availability)
+    ? (rawAvailability as Availability)
+    : "";
   const lat = num(req.query.lat);
   const lng = num(req.query.lng);
   const radiusKm = num(req.query.radiusKm);
@@ -69,9 +78,17 @@ export const searchProviders = asyncHandler(async (req, res) => {
       Prisma.sql`"Provider"."searchVector" @@ websearch_to_tsquery('simple', immutable_unaccent(${q}))`,
     );
   }
-  if (city) conds.push(Prisma.sql`"Provider"."city" ILIKE ${city}`);
-  if (region) conds.push(Prisma.sql`"Provider"."region" ILIKE ${region}`);
-  if (minRating != null) conds.push(Prisma.sql`"Provider"."ratingAvg" >= ${minRating}`);
+  if (city)
+    conds.push(
+      Prisma.sql`immutable_unaccent(lower("Provider"."city")) = immutable_unaccent(lower(${city}))`,
+    );
+  if (region)
+    conds.push(
+      Prisma.sql`immutable_unaccent(lower("Provider"."region")) = immutable_unaccent(lower(${region}))`,
+    );
+  // Compare against a small epsilon so a displayed-equal (rounded) rating is
+  // never wrongly excluded at a boundary (e.g. stored 4.45 shown as 4.5).
+  if (minRating != null) conds.push(Prisma.sql`"Provider"."ratingAvg" >= ${minRating - 0.05}`);
   if (availability) conds.push(Prisma.sql`"Provider"."availability" = ${availability}::"Availability"`);
   if (categoryId) {
     conds.push(Prisma.sql`EXISTS (
@@ -242,7 +259,7 @@ export const getProviderReviews = asyncHandler(async (req, res) => {
       id: r.id,
       rating: r.rating,
       comment: r.comment,
-      clientName: r.client?.name ?? "Anonymous",
+      clientName: r.client?.name ?? t(req.locale, "reviews.anonymous"),
       createdAt: r.createdAt,
     })),
     total,

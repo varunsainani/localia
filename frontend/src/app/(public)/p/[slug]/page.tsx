@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { fetchProviderServer } from "@/lib/server-api";
 import { locationLine } from "@/lib/format";
@@ -20,7 +21,11 @@ export async function generateMetadata({
   const provider = await fetchProviderServer(slug);
 
   if (!provider) {
-    return { title: "Localia", alternates: { canonical: `/p/${slug}` } };
+    // Unknown/unapproved provider: don't let the soft-404 get indexed.
+    return {
+      title: "Localia",
+      robots: { index: false, follow: false },
+    };
   }
 
   const category = provider.categories[0]?.name ?? "";
@@ -31,6 +36,7 @@ export async function generateMetadata({
   });
   const description = provider.headline || provider.about?.slice(0, 160) || title;
   const image = provider.coverUrl || provider.avatarUrl || undefined;
+  const imageAlt = t("ogProvider", { name: provider.businessName });
 
   return {
     title,
@@ -41,13 +47,15 @@ export async function generateMetadata({
       description,
       type: "profile",
       url: `${APP_URL}/p/${slug}`,
-      images: image ? [{ url: image }] : undefined,
+      images: image
+        ? [{ url: image, width: 1200, height: 630, alt: imageAlt }]
+        : undefined,
     },
     twitter: {
       card: "summary_large_image",
       title: t("ogProvider", { name: provider.businessName }),
       description,
-      images: image ? [image] : undefined,
+      images: image ? [{ url: image, alt: imageAlt }] : undefined,
     },
   };
 }
@@ -59,6 +67,12 @@ export default async function ProviderProfilePage({
 }) {
   const { slug } = await params;
   const provider = await fetchProviderServer(slug);
+
+  // Unknown/unapproved provider: render the 404 boundary with a real 404 status
+  // instead of a soft-404 (HTTP 200) with thin content.
+  if (!provider) notFound();
+
+  const t = await getTranslations("profile");
 
   // JSON-LD: ProfessionalService + BreadcrumbList. Rendered server-side for
   // crawlers; the interactive UI hydrates from the client component.
@@ -101,7 +115,7 @@ export default async function ProviderProfilePage({
             {
               "@type": "ListItem",
               position: 2,
-              name: provider.categories[0]?.name ?? "Categories",
+              name: provider.categories[0]?.name ?? t("breadcrumbCategories"),
               item: provider.categories[0]
                 ? `${APP_URL}/category/${provider.categories[0].slug}`
                 : `${APP_URL}/categories`,

@@ -133,9 +133,9 @@ export function ProfileClient({ slug }: { slug: string }) {
       : [];
 
   const availabilityTone =
-    provider.availability === "available"
+    provider.availability === "AVAILABLE"
       ? "success"
-      : provider.availability === "busy"
+      : provider.availability === "BUSY"
         ? "warning"
         : "neutral";
 
@@ -167,7 +167,11 @@ export function ProfileClient({ slug }: { slug: string }) {
             <div className="h-20 w-20 shrink-0 overflow-hidden rounded-2xl border-2 border-card bg-muted shadow-sm">
               {provider.avatarUrl ? (
                 // eslint-disable-next-line @next/next/no-img-element
-                <img src={provider.avatarUrl} alt="" className="h-full w-full object-cover" />
+                <img
+                  src={provider.avatarUrl}
+                  alt={t("avatarAlt", { name: provider.businessName })}
+                  className="h-full w-full object-cover"
+                />
               ) : (
                 <span className="flex h-full w-full items-center justify-center bg-primary/10 text-xl font-bold text-primary">
                   {initials(provider.businessName)}

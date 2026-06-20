@@ -10,11 +10,19 @@ import { CategoryIcon } from "@/components/category-icon";
 import { LoadingBlock, EmptyState } from "@/components/states";
 import { Button } from "@/components/ui/button";
 
-export function CategoryResults({ slug, icon }: { slug: string; icon?: string }) {
+export function CategoryResults({
+  slug,
+  name: initialName,
+  icon,
+}: {
+  slug: string;
+  name?: string;
+  icon?: string;
+}) {
   const t = useTranslations("categories");
   const ts = useTranslations("search");
   const [items, setItems] = useState<ProviderCardType[] | null>(null);
-  const [name, setName] = useState<string>("");
+  const [name, setName] = useState<string>(initialName ?? "");
 
   useEffect(() => {
     searchProviders({ category: slug, pageSize: 24, sort: "rating" })
@@ -30,7 +38,7 @@ export function CategoryResults({ slug, icon }: { slug: string; icon?: string })
       .catch(() => setItems([]));
   }, [slug]);
 
-  const title = name || slug;
+  const title = name || initialName || slug;
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6">

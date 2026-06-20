@@ -5,6 +5,7 @@ import { HttpError } from "../lib/http-error";
 import { logAudit } from "../lib/audit";
 import { providerCard } from "../lib/serialize";
 import { recomputeRating } from "../lib/rating";
+import { t } from "../i18n";
 
 const reviewSchema = z.object({
   rating: z.coerce
@@ -56,7 +57,7 @@ export const createReview = asyncHandler(async (req, res) => {
       id: review.id,
       rating: review.rating,
       comment: review.comment,
-      clientName: review.client?.name ?? "Anonymous",
+      clientName: review.client?.name ?? t(req.locale, "reviews.anonymous"),
       createdAt: review.createdAt,
     },
   });
@@ -65,7 +66,9 @@ export const createReview = asyncHandler(async (req, res) => {
 // GET /me/favorites — the client's favorited providers as cards.
 export const listFavorites = asyncHandler(async (req, res) => {
   const favorites = await prisma.favorite.findMany({
-    where: { clientId: req.userId! },
+    // Only surface favorites whose provider is currently public (APPROVED), so a
+    // later-suspended/rejected provider stops leaking through existing favorites.
+    where: { clientId: req.userId!, provider: { status: "APPROVED" } },
     orderBy: { createdAt: "desc" },
     include: {
       provider: { include: { categories: { include: { category: true } } } },
@@ -78,8 +81,10 @@ export const listFavorites = asyncHandler(async (req, res) => {
 
 // POST /me/favorites/:providerId — idempotent add.
 export const addFavorite = asyncHandler(async (req, res) => {
-  const provider = await prisma.provider.findUnique({
-    where: { id: req.params.providerId },
+  // A client may only favorite a public (APPROVED) provider; a PENDING/
+  // SUSPENDED/REJECTED provider is treated as not found, matching public gating.
+  const provider = await prisma.provider.findFirst({
+    where: { id: req.params.providerId, status: "APPROVED" },
     select: { id: true },
   });
   if (!provider) throw new HttpError(404, "errors.provider.notFound", { code: "NOT_FOUND" });

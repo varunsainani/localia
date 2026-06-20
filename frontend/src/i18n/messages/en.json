@@ -44,7 +44,8 @@
     "myProfile": "My profile",
     "account": "Account",
     "menu": "Open menu",
-    "forProfessionals": "For professionals"
+    "forProfessionals": "For professionals",
+    "favorites": "Favorites"
   },
   "footer": {
     "tagline": "Find trusted local professionals and contact them directly.",
@@ -206,9 +207,9 @@
     "apply": "Apply filters"
   },
   "availability": {
-    "available": "Available now",
-    "busy": "Busy",
-    "unavailable": "Unavailable"
+    "AVAILABLE": "Available now",
+    "BUSY": "Busy",
+    "BY_APPOINTMENT": "By appointment"
   },
   "profile": {
     "about": "About",
@@ -231,9 +232,24 @@
     "share": "Share",
     "shareCopied": "Link copied",
     "breadcrumbHome": "Home",
+    "breadcrumbCategories": "Categories",
+    "avatarAlt": "{name} profile photo",
     "loadError": "Could not load this profile.",
     "notFound": "This professional could not be found.",
     "backToSearch": "Back to search"
+  },
+  "favorites": {
+    "title": "Your favorites",
+    "subtitle": "Professionals you've saved.",
+    "browse": "Browse professionals",
+    "retry": "Try again",
+    "loadError": "Could not load your favorites.",
+    "clientsOnly": "Favorites are for client accounts",
+    "clientsOnlySubtitle": "Sign in with a client account to save and view your favorite professionals.",
+    "empty": {
+      "title": "No favorites yet",
+      "subtitle": "Tap the heart on any professional to save them here."
+    }
   },
   "review": {
     "title": "Reviews",

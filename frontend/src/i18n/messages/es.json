@@ -44,7 +44,8 @@
     "myProfile": "Mi perfil",
     "account": "Cuenta",
     "menu": "Abrir menú",
-    "forProfessionals": "Para profesionales"
+    "forProfessionals": "Para profesionales",
+    "favorites": "Favoritos"
   },
   "footer": {
     "tagline": "Encuentra profesionales locales de confianza y contáctalos directamente.",
@@ -206,9 +207,9 @@
     "apply": "Aplicar filtros"
   },
   "availability": {
-    "available": "Disponible ahora",
-    "busy": "Ocupado",
-    "unavailable": "No disponible"
+    "AVAILABLE": "Disponible ahora",
+    "BUSY": "Ocupado",
+    "BY_APPOINTMENT": "Con cita previa"
   },
   "profile": {
     "about": "Acerca de",
@@ -231,9 +232,24 @@
     "share": "Compartir",
     "shareCopied": "Enlace copiado",
     "breadcrumbHome": "Inicio",
+    "breadcrumbCategories": "Categorías",
+    "avatarAlt": "Foto de perfil de {name}",
     "loadError": "No se pudo cargar este perfil.",
     "notFound": "No se pudo encontrar este profesional.",
     "backToSearch": "Volver a la búsqueda"
+  },
+  "favorites": {
+    "title": "Tus favoritos",
+    "subtitle": "Profesionales que has guardado.",
+    "browse": "Explorar profesionales",
+    "retry": "Intentar de nuevo",
+    "loadError": "No se pudieron cargar tus favoritos.",
+    "clientsOnly": "Los favoritos son para cuentas de cliente",
+    "clientsOnlySubtitle": "Inicia sesión con una cuenta de cliente para guardar y ver tus profesionales favoritos.",
+    "empty": {
+      "title": "Aún no tienes favoritos",
+      "subtitle": "Toca el corazón en cualquier profesional para guardarlo aquí."
+    }
   },
   "review": {
     "title": "Reseñas",

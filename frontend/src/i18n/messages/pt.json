@@ -44,7 +44,8 @@
     "myProfile": "Meu perfil",
     "account": "Conta",
     "menu": "Abrir menu",
-    "forProfessionals": "Para profissionais"
+    "forProfessionals": "Para profissionais",
+    "favorites": "Favoritos"
   },
   "footer": {
     "tagline": "Encontre profissionais locais de confiança e fale com eles diretamente.",
@@ -206,9 +207,9 @@
     "apply": "Aplicar filtros"
   },
   "availability": {
-    "available": "Disponível agora",
-    "busy": "Ocupado",
-    "unavailable": "Indisponível"
+    "AVAILABLE": "Disponível agora",
+    "BUSY": "Ocupado",
+    "BY_APPOINTMENT": "Com hora marcada"
   },
   "profile": {
     "about": "Sobre",
@@ -231,9 +232,24 @@
     "share": "Compartilhar",
     "shareCopied": "Link copiado",
     "breadcrumbHome": "Início",
+    "breadcrumbCategories": "Categorias",
+    "avatarAlt": "Foto de perfil de {name}",
     "loadError": "Não foi possível carregar este perfil.",
     "notFound": "Este profissional não foi encontrado.",
     "backToSearch": "Voltar à pesquisa"
+  },
+  "favorites": {
+    "title": "Seus favoritos",
+    "subtitle": "Profissionais que você salvou.",
+    "browse": "Explorar profissionais",
+    "retry": "Tentar novamente",
+    "loadError": "Não foi possível carregar seus favoritos.",
+    "clientsOnly": "Os favoritos são para contas de cliente",
+    "clientsOnlySubtitle": "Entre com uma conta de cliente para salvar e ver seus profissionais favoritos.",
+    "empty": {
+      "title": "Ainda sem favoritos",
+      "subtitle": "Toque no coração de qualquer profissional para salvá-lo aqui."
+    }
   },
   "review": {
     "title": "Avaliações",

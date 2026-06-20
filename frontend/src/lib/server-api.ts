@@ -4,7 +4,7 @@
 // gracefully (client components then render the live data + error states).
 import "server-only";
 import { getUserLocale } from "@/i18n/locale";
-import type { ProviderDetail } from "./api";
+import type { Category, ProviderDetail } from "./api";
 
 const API = process.env.API_PROXY_TARGET || "http://localhost:4000";
 
@@ -27,4 +27,11 @@ export async function fetchProviderServer(slug: string): Promise<ProviderDetail 
     `/api/providers/${encodeURIComponent(slug)}`,
   );
   return data?.provider ?? null;
+}
+
+// Fetch the localized category list (X-Locale is forwarded by serverGet).
+// Returns null only if the backend is unreachable (distinct from an empty list).
+export async function fetchCategoriesServer(): Promise<Category[] | null> {
+  const data = await serverGet<{ categories: Category[] }>("/api/categories");
+  return data?.categories ?? null;
 }

@@ -14,9 +14,9 @@ import { cn } from "@/lib/utils";
 function AvailabilityDot({ availability }: { availability: ProviderCardType["availability"] }) {
   const t = useTranslations("availability");
   const tone =
-    availability === "available"
+    availability === "AVAILABLE"
       ? "bg-success"
-      : availability === "busy"
+      : availability === "BUSY"
         ? "bg-warning"
         : "bg-muted-foreground/50";
   return (
