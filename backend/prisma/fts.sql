@@ -27,10 +27,12 @@ CREATE OR REPLACE FUNCTION immutable_array_to_string(text[])
   PARALLEL SAFE
 AS $$ SELECT array_to_string($1, ' ') $$;
 
--- Drop first so re-applying picks up the unaccented definition cleanly.
+-- Drop first so re-applying picks up the unaccented definition cleanly. The
+-- DROP ... IF EXISTS + ADD COLUMN IF NOT EXISTS pair is fully idempotent: a
+-- re-run always drops the old definition and re-adds the current one.
 ALTER TABLE "Provider" DROP COLUMN IF EXISTS "searchVector";
 ALTER TABLE "Provider"
-  ADD COLUMN "searchVector" tsvector
+  ADD COLUMN IF NOT EXISTS "searchVector" tsvector
   GENERATED ALWAYS AS (
     setweight(to_tsvector('simple', immutable_unaccent(coalesce("businessName", ''))), 'A') ||
     setweight(to_tsvector('simple', immutable_unaccent(coalesce("headline", ''))), 'B') ||

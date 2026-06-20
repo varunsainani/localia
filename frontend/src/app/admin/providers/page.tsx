@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
-import { Search, Star, ExternalLink, Users } from "lucide-react";
+import { Search, Star, ExternalLink, Users, AlertCircle } from "lucide-react";
 import {
   listAdminProviders,
   patchProvider,
@@ -32,7 +32,10 @@ const STATUSES: ProviderStatus[] = ["PENDING", "APPROVED", "REJECTED", "SUSPENDE
 
 export default function AdminProviders() {
   const t = useTranslations("admin.providers");
+  const ta = useTranslations("admin");
   const ts = useTranslations("dashboard.status");
+  const tc = useTranslations("common");
+  const tp = useTranslations("search.pagination");
   const fmt = useAppFormat();
 
   const [items, setItems] = useState<ProviderCard[] | null>(null);
@@ -42,15 +45,18 @@ export default function AdminProviders() {
   const [status, setStatus] = useState<ProviderStatus | "">("");
   const [busy, setBusy] = useState<string | null>(null);
   const [error, setError] = useState("");
+  const [loadError, setLoadError] = useState(false);
 
   const load = useCallback(async () => {
     setError("");
+    setLoadError(false);
     try {
       const res = await listAdminProviders({ q: q || undefined, status, page });
       setItems(res.items);
       setTotal(res.total);
     } catch {
-      setItems([]);
+      setItems(null);
+      setLoadError(true);
     }
   }, [q, status, page]);
 
@@ -115,7 +121,17 @@ export default function AdminProviders() {
 
       {error && <p className="rounded-md bg-danger/10 px-3 py-2 text-sm text-danger">{error}</p>}
 
-      {items === null ? (
+      {loadError ? (
+        <EmptyState
+          icon={AlertCircle}
+          title={ta("loadError")}
+          action={
+            <Button variant="outline" onClick={load}>
+              {tc("retry")}
+            </Button>
+          }
+        />
+      ) : items === null ? (
         <LoadingBlock />
       ) : items.length === 0 ? (
         <EmptyState icon={Users} title={t("empty")} />
@@ -184,7 +200,7 @@ export default function AdminProviders() {
                       </Button>
                     )}
                     <Link href={`/p/${p.slug}`} target="_blank">
-                      <Button variant="ghost" size="icon">
+                      <Button variant="ghost" size="icon" aria-label={tc("viewProfile")}>
                         <ExternalLink className="h-4 w-4" />
                       </Button>
                     </Link>
@@ -196,7 +212,13 @@ export default function AdminProviders() {
 
           {totalPages > 1 && (
             <div className="flex items-center justify-center gap-3">
-              <Button variant="outline" size="sm" disabled={page <= 1} onClick={() => setPage((p) => p - 1)}>
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={page <= 1}
+                onClick={() => setPage((p) => p - 1)}
+                aria-label={tp("prev")}
+              >
                 ‹
               </Button>
               <span className="text-sm text-muted-foreground">
@@ -207,6 +229,7 @@ export default function AdminProviders() {
                 size="sm"
                 disabled={page >= totalPages}
                 onClick={() => setPage((p) => p + 1)}
+                aria-label={tp("next")}
               >
                 ›
               </Button>

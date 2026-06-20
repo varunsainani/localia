@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useTranslations, useLocale } from "next-intl";
-import { Plus, Pencil, Trash2, Tags, X } from "lucide-react";
+import { Plus, Pencil, Trash2, Tags, X, AlertCircle } from "lucide-react";
 import {
   listAdminCategories,
   createCategory,
@@ -35,18 +35,22 @@ function localizedName(c: AdminCategory, locale: string) {
 
 export default function AdminCategories() {
   const t = useTranslations("admin.categories");
+  const ta = useTranslations("admin");
   const tc = useTranslations("common");
   const locale = useLocale();
 
   const [categories, setCategories] = useState<AdminCategory[] | null>(null);
+  const [loadError, setLoadError] = useState(false);
   const [form, setForm] = useState<FormState | null>(null);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
 
   function reload() {
+    setCategories(null);
+    setLoadError(false);
     listAdminCategories()
       .then(setCategories)
-      .catch(() => setCategories([]));
+      .catch(() => setLoadError(true));
   }
 
   useEffect(reload, []);
@@ -107,6 +111,23 @@ export default function AdminCategories() {
     } catch {
       setError(t("deleteError"));
     }
+  }
+
+  if (loadError) {
+    return (
+      <div className="space-y-6">
+        <PageHeader title={t("title")} description={t("subtitle")} />
+        <EmptyState
+          icon={AlertCircle}
+          title={ta("loadError")}
+          action={
+            <Button variant="outline" onClick={reload}>
+              {tc("retry")}
+            </Button>
+          }
+        />
+      </div>
+    );
   }
 
   if (categories === null) return <LoadingBlock />;

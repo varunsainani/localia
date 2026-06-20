@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
-import { ArrowRight, Search } from "lucide-react";
+import { ArrowRight, Search, AlertCircle } from "lucide-react";
 import { searchProviders, type ProviderCard as ProviderCardType } from "@/lib/api";
 import { ProviderCard } from "@/components/provider-card";
 import { CategoryIcon } from "@/components/category-icon";
@@ -21,10 +21,15 @@ export function CategoryResults({
 }) {
   const t = useTranslations("categories");
   const ts = useTranslations("search");
+  const tn = useTranslations("nav");
+  const tc = useTranslations("common");
   const [items, setItems] = useState<ProviderCardType[] | null>(null);
+  const [error, setError] = useState(false);
   const [name, setName] = useState<string>(initialName ?? "");
 
-  useEffect(() => {
+  const load = useCallback(() => {
+    setItems(null);
+    setError(false);
     searchProviders({ category: slug, pageSize: 24, sort: "rating" })
       .then((res) => {
         setItems(res.items);
@@ -35,8 +40,12 @@ export function CategoryResults({
           if (cat) setName(cat.name);
         }
       })
-      .catch(() => setItems([]));
+      .catch(() => setError(true));
   }, [slug]);
+
+  useEffect(() => {
+    load();
+  }, [load]);
 
   const title = name || initialName || slug;
 
@@ -44,7 +53,7 @@ export function CategoryResults({
     <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6">
       <nav className="mb-4 flex items-center gap-1.5 text-sm text-muted-foreground">
         <Link href="/" className="hover:text-foreground">
-          {t("title")}
+          {tn("home")}
         </Link>
         <span>/</span>
         <Link href="/categories" className="hover:text-foreground">
@@ -67,7 +76,17 @@ export function CategoryResults({
       </div>
 
       <div className="mt-8">
-        {items === null ? (
+        {error ? (
+          <EmptyState
+            icon={AlertCircle}
+            title={ts("loadError")}
+            action={
+              <Button variant="outline" onClick={load}>
+                {tc("retry")}
+              </Button>
+            }
+          />
+        ) : items === null ? (
           <LoadingBlock />
         ) : items.length === 0 ? (
           <EmptyState

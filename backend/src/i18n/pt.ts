@@ -17,6 +17,7 @@ const pt: Record<string, string> = {
   "errors.common.notFound": "Não encontrado",
   "errors.common.invalidJson": "O corpo da solicitação não é um JSON válido",
   "errors.common.payloadTooLarge": "O corpo da solicitação é muito grande",
+  "errors.common.tooManyRequests": "Muitas solicitações, tente novamente mais tarde",
 
   // --- Providers ----------------------------------------------------------
   "errors.provider.notFound": "Prestador não encontrado",

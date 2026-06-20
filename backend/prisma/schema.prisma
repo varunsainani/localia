@@ -1,3 +1,16 @@
+// ============================================================================
+// IMPORTANT — Raw-SQL objects NOT managed by Prisma (see prisma/fts.sql):
+//   - Provider.searchVector  (generated STORED tsvector column)
+//   - provider_search_idx    (GIN index on searchVector)
+//   - provider_geo_idx        (btree index on lat, lng)
+//   - immutable_unaccent(text) / immutable_array_to_string(text[]) functions
+//
+// These live ONLY in prisma/fts.sql and are absent from this schema. A bare
+// `prisma db push` DROPS the searchVector column (Prisma considers it drift).
+// ALWAYS deploy schema changes with `npm run prisma:push`, which runs
+// `prisma db push && npm run db:fts` to re-apply fts.sql afterward.
+// ============================================================================
+
 generator client {
   provider      = "prisma-client-js"
   binaryTargets = ["native", "rhel-openssl-3.0.x"]
@@ -56,6 +69,13 @@ model Category {
   createdAt DateTime           @default(now())
 }
 
+// NOTE: The full-text `searchVector` tsvector column and the `provider_search_idx`
+// (GIN), `provider_geo_idx` ((lat, lng)) indexes plus the `immutable_unaccent` /
+// `immutable_array_to_string` functions are NOT declared here — they live in
+// prisma/fts.sql and are applied by `npm run db:fts`. A bare `prisma db push`
+// DROPS `searchVector`; always deploy with `npm run prisma:push` (which re-runs
+// fts.sql). The @@index entries below ARE Prisma-managed; matching raw-SQL for
+// the sort/search indexes also lives in prisma/add-search-indexes.sql.
 model Provider {
   id              String             @id @default(cuid())
   userId          String             @unique
@@ -92,6 +112,12 @@ model Provider {
   @@index([status])
   @@index([city])
   @@index([featured])
+  // Hot listing/sort paths. Names are pinned so the live DB (applied via
+  // prisma/add-search-indexes.sql) and this schema stay in agreement.
+  @@index([ratingAvg], name: "provider_rating_idx")
+  @@index([createdAt], name: "provider_created_idx")
+  @@index([availability], name: "provider_availability_idx")
+  @@index([status, featured, ratingAvg], name: "provider_status_featured_rating_idx")
 }
 
 model ProviderCategory {

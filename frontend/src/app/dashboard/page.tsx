@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
-import { Eye, Star, MessageSquare, ExternalLink, UserPlus, Send } from "lucide-react";
+import { Eye, Star, MessageSquare, ExternalLink, UserPlus, Send, AlertCircle } from "lucide-react";
 import {
   getMyProvider,
   getMyProviderStats,
@@ -29,28 +29,36 @@ const STATUS_TONE: Record<ProviderStatus, BadgeTone> = {
 export default function DashboardOverview() {
   const t = useTranslations("dashboard");
   const ts = useTranslations("dashboard.status");
+  const tc = useTranslations("common");
   const fmt = useAppFormat();
 
   const [provider, setProvider] = useState<ProviderDetail | null>(null);
   const [stats, setStats] = useState<ProviderStats | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 
-  useEffect(() => {
-    (async () => {
-      try {
-        const p = await getMyProvider();
-        setProvider(p);
-        if (p) {
-          const s = await getMyProviderStats().catch(() => null);
-          setStats(s);
-        }
-      } finally {
-        setLoading(false);
+  const load = useCallback(async () => {
+    setLoading(true);
+    setError(false);
+    try {
+      const p = await getMyProvider();
+      setProvider(p);
+      if (p) {
+        const s = await getMyProviderStats().catch(() => null);
+        setStats(s);
       }
-    })();
+    } catch {
+      setError(true);
+    } finally {
+      setLoading(false);
+    }
   }, []);
+
+  useEffect(() => {
+    load();
+  }, [load]);
 
   async function submit() {
     setSubmitting(true);
@@ -67,6 +75,23 @@ export default function DashboardOverview() {
   }
 
   if (loading) return <LoadingBlock />;
+
+  if (error) {
+    return (
+      <div className="space-y-6">
+        <PageHeader title={t("overview.title")} description={t("overview.subtitle")} />
+        <EmptyState
+          icon={AlertCircle}
+          title={t("loadError")}
+          action={
+            <Button variant="outline" onClick={load}>
+              {tc("retry")}
+            </Button>
+          }
+        />
+      </div>
+    );
+  }
 
   if (!provider) {
     return (

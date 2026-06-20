@@ -40,7 +40,9 @@ export function AuthAside() {
         </ul>
       </div>
 
-      <p className="relative text-xs text-white/40">{t("copyright", { year: 2026 })}</p>
+      <p className="relative text-xs text-white/40">
+        {t("copyright", { year: new Date().getFullYear() })}
+      </p>
     </div>
   );
 }

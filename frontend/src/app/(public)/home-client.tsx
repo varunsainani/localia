@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
-import { Search, GitCompare, MessageCircle, ArrowRight, MapPin, Star } from "lucide-react";
+import { Search, GitCompare, MessageCircle, ArrowRight, MapPin, Star, AlertCircle } from "lucide-react";
 import {
   listCategories,
   searchProviders,
@@ -15,44 +15,57 @@ import { ProviderCard } from "@/components/provider-card";
 import { CategoryIcon } from "@/components/category-icon";
 import { ProviderMap, type MapPoint } from "@/components/map";
 import { Button } from "@/components/ui/button";
+import { LoadingBlock, EmptyState } from "@/components/states";
 import { useAppFormat } from "@/i18n/use-app-format";
 
 export function HomeClient() {
   const t = useTranslations("landing");
   const tc = useTranslations("categories");
+  const tcommon = useTranslations("common");
   const fmt = useAppFormat();
 
   const [categories, setCategories] = useState<Category[]>([]);
   const [featured, setFeatured] = useState<ProviderCardType[]>([]);
   const [mapPoints, setMapPoints] = useState<MapPoint[]>([]);
   const [total, setTotal] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    setError(false);
+    try {
+      const [cats, featuredRes, mapRes] = await Promise.all([
+        listCategories(),
+        searchProviders({ sort: "rating", pageSize: 6 }),
+        // A wider pull just to populate the map preview.
+        searchProviders({ pageSize: 50 }),
+      ]);
+      setCategories(cats);
+      setFeatured(featuredRes.items);
+      setTotal(featuredRes.total);
+      setMapPoints(
+        mapRes.items.map((p) => ({
+          id: p.id,
+          slug: p.slug,
+          lat: p.lat,
+          lng: p.lng,
+          businessName: p.businessName,
+          headline: p.headline,
+          city: p.city,
+          featured: p.featured,
+        })),
+      );
+    } catch {
+      setError(true);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
-    listCategories().then(setCategories).catch(() => setCategories([]));
-    searchProviders({ sort: "rating", pageSize: 6 })
-      .then((res) => {
-        setFeatured(res.items);
-        setTotal(res.total);
-      })
-      .catch(() => {});
-    // A wider pull just to populate the map preview.
-    searchProviders({ pageSize: 50 })
-      .then((res) =>
-        setMapPoints(
-          res.items.map((p) => ({
-            id: p.id,
-            slug: p.slug,
-            lat: p.lat,
-            lng: p.lng,
-            businessName: p.businessName,
-            headline: p.headline,
-            city: p.city,
-            featured: p.featured,
-          })),
-        ),
-      )
-      .catch(() => {});
-  }, []);
+    load();
+  }, [load]);
 
   const cityCount = new Set(mapPoints.map((p) => p.city).filter(Boolean)).size;
 
@@ -61,6 +74,30 @@ export function HomeClient() {
     { icon: GitCompare, title: t("how.step2Title"), desc: t("how.step2Desc") },
     { icon: MessageCircle, title: t("how.step3Title"), desc: t("how.step3Desc") },
   ];
+
+  if (loading) {
+    return (
+      <div className="mx-auto max-w-6xl px-4 py-24 sm:px-6">
+        <LoadingBlock />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="mx-auto max-w-6xl px-4 py-24 sm:px-6">
+        <EmptyState
+          icon={AlertCircle}
+          title={t("loadError")}
+          action={
+            <Button variant="outline" onClick={load}>
+              {tcommon("retry")}
+            </Button>
+          }
+        />
+      </div>
+    );
+  }
 
   return (
     <>

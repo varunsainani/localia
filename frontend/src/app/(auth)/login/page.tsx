@@ -17,6 +17,7 @@ type DemoRole = "client" | "provider" | "admin";
 
 export default function LoginPage() {
   const t = useTranslations("auth.login");
+  const ta = useTranslations("auth");
   const router = useRouter();
   const { refresh } = useAuth();
   const [email, setEmail] = useState("");
@@ -119,7 +120,7 @@ export default function LoginPage() {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="you@example.com"
+                placeholder={ta("emailPlaceholder")}
               />
             </label>
             <label className="block space-y-1.5">

@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { requireAuth, requireRole } from "../middleware/auth";
 import { uploadSingle } from "../middleware/upload";
+import { rateLimit } from "../middleware/rate-limit";
 import * as auth from "../controllers/authController";
 import * as categories from "../controllers/categoryController";
 import * as providers from "../controllers/providerController";
@@ -10,10 +11,16 @@ import * as admin from "../controllers/adminController";
 
 const router = Router();
 
+// Strict limiter for credential endpoints (brute-force / abuse defense):
+// 10 requests / 15 min per IP. Looser limiter for the public search route:
+// 60 requests / min per IP. Both are per-instance/best-effort on serverless.
+const authLimiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 10, label: "auth" });
+const searchLimiter = rateLimit({ windowMs: 60 * 1000, max: 60, label: "search" });
+
 // --- Auth ------------------------------------------------------------------
-router.post("/auth/register", auth.register);
-router.post("/auth/login", auth.login);
-router.post("/auth/refresh", auth.refresh);
+router.post("/auth/register", authLimiter, auth.register);
+router.post("/auth/login", authLimiter, auth.login);
+router.post("/auth/refresh", authLimiter, auth.refresh);
 router.post("/auth/logout", auth.logout);
 router.get("/auth/me", requireAuth, auth.me);
 
@@ -57,7 +64,7 @@ adminRouter.get("/audit", admin.adminAudit);
 router.use("/admin", adminRouter);
 
 // --- Providers (public) ----------------------------------------------------
-router.get("/providers", providers.searchProviders);
+router.get("/providers", searchLimiter, providers.searchProviders);
 router.get("/providers/:slug/reviews", providers.getProviderReviews);
 router.get("/providers/:slug", providers.getProvider);
 // Client posts a review for a provider (by slug).

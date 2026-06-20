@@ -54,7 +54,6 @@
     "browse": "Explorar profissionais",
     "categories": "Categorias",
     "becomePro": "Anuncie seu negócio",
-    "about": "Sobre a Localia",
     "rights": "© {year} Localia. Todos os direitos reservados.",
     "builtWith": "Serviços locais, no mapa."
   },
@@ -69,6 +68,7 @@
       "contactDesc": "Mande mensagem aos profissionais diretamente pelo WhatsApp: sem intermediários nem esperas.",
       "copyright": "© {year} Localia"
     },
+    "emailPlaceholder": "voce@exemplo.com",
     "login": {
       "heading": "Bem-vindo de volta",
       "subtitle": "Entre para gerenciar seu perfil, avaliações e favoritos.",
@@ -153,7 +153,8 @@
       "title": "Você é um profissional?",
       "subtitle": "Crie um perfil gratuito, alcance clientes locais e faça seu negócio crescer na Localia.",
       "cta": "Anuncie seu negócio"
-    }
+    },
+    "loadError": "Não foi possível carregar a página. Tente novamente."
   },
   "search": {
     "title": "Pesquisar profissionais",
@@ -271,6 +272,7 @@
   },
   "dashboard": {
     "title": "Painel do profissional",
+    "loadError": "Não foi possível carregar seu painel.",
     "nav": {
       "overview": "Resumo",
       "profile": "Editar perfil",
@@ -361,6 +363,7 @@
   },
   "admin": {
     "title": "Administração",
+    "loadError": "Não foi possível carregar os dados. Tente novamente.",
     "nav": {
       "overview": "Resumo",
       "queue": "Fila de revisão",

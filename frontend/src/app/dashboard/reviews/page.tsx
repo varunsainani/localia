@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
-import { Star, MessageSquare } from "lucide-react";
+import { Star, MessageSquare, AlertCircle } from "lucide-react";
 import {
   getMyProvider,
   getProviderReviews,
@@ -20,6 +20,7 @@ export default function DashboardReviews() {
   const t = useTranslations("dashboard.reviews");
   const tp = useTranslations("profile");
   const tr = useTranslations("review");
+  const tc = useTranslations("common");
   const fmt = useAppFormat();
 
   const [provider, setProvider] = useState<ProviderDetail | null>(null);
@@ -27,23 +28,30 @@ export default function DashboardReviews() {
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
 
-  useEffect(() => {
-    (async () => {
-      try {
-        const p = await getMyProvider();
-        setProvider(p);
-        if (p) {
-          const res = await getProviderReviews(p.slug, 1);
-          setReviews(res.items);
-          setTotal(res.total);
-        }
-      } finally {
-        setLoading(false);
+  const load = useCallback(async () => {
+    setLoading(true);
+    setError(false);
+    try {
+      const p = await getMyProvider();
+      setProvider(p);
+      if (p) {
+        const res = await getProviderReviews(p.slug, 1);
+        setReviews(res.items);
+        setTotal(res.total);
       }
-    })();
+    } catch {
+      setError(true);
+    } finally {
+      setLoading(false);
+    }
   }, []);
+
+  useEffect(() => {
+    load();
+  }, [load]);
 
   async function loadMore() {
     if (!provider) return;
@@ -78,7 +86,17 @@ export default function DashboardReviews() {
         }
       />
 
-      {reviews.length === 0 ? (
+      {error ? (
+        <EmptyState
+          icon={AlertCircle}
+          title={t("loadError")}
+          action={
+            <Button variant="outline" onClick={load}>
+              {tc("retry")}
+            </Button>
+          }
+        />
+      ) : reviews.length === 0 ? (
         <EmptyState icon={MessageSquare} title={t("empty")} />
       ) : (
         <div className="space-y-4">

@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
-import { Check, X, ClipboardCheck, ExternalLink, MapPin } from "lucide-react";
+import { Check, X, ClipboardCheck, ExternalLink, MapPin, AlertCircle } from "lucide-react";
 import {
   getAdminQueue,
   approveProvider,
@@ -23,20 +23,28 @@ import { locationLine } from "@/lib/format";
 
 export default function ReviewQueue() {
   const t = useTranslations("admin.queue");
+  const ta = useTranslations("admin");
   const tc = useTranslations("common");
   const tStatus = useTranslations("dashboard.status");
   const [items, setItems] = useState<ProviderCard[] | null>(null);
+  const [loadError, setLoadError] = useState(false);
   const [busy, setBusy] = useState<string | null>(null);
   const [rejecting, setRejecting] = useState<string | null>(null);
   const [reason, setReason] = useState("");
   const [error, setError] = useState("");
   const [toast, setToast] = useState("");
 
-  useEffect(() => {
+  const load = useCallback(() => {
+    setItems(null);
+    setLoadError(false);
     getAdminQueue()
       .then(setItems)
-      .catch(() => setItems([]));
+      .catch(() => setLoadError(true));
   }, []);
+
+  useEffect(() => {
+    load();
+  }, [load]);
 
   function flash(msg: string) {
     setToast(msg);
@@ -79,6 +87,23 @@ export default function ReviewQueue() {
     } finally {
       setBusy(null);
     }
+  }
+
+  if (loadError) {
+    return (
+      <div className="space-y-6">
+        <PageHeader title={t("title")} description={t("subtitle")} />
+        <EmptyState
+          icon={AlertCircle}
+          title={ta("loadError")}
+          action={
+            <Button variant="outline" onClick={load}>
+              {tc("retry")}
+            </Button>
+          }
+        />
+      </div>
+    );
   }
 
   if (items === null) return <LoadingBlock />;

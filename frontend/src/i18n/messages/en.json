@@ -54,7 +54,6 @@
     "browse": "Browse professionals",
     "categories": "Categories",
     "becomePro": "List your business",
-    "about": "About Localia",
     "rights": "© {year} Localia. All rights reserved.",
     "builtWith": "Local services, mapped."
   },
@@ -69,6 +68,7 @@
       "contactDesc": "Message professionals directly on WhatsApp — no middlemen, no waiting.",
       "copyright": "© {year} Localia"
     },
+    "emailPlaceholder": "you@example.com",
     "login": {
       "heading": "Welcome back",
       "subtitle": "Sign in to manage your profile, reviews, and favorites.",
@@ -153,7 +153,8 @@
       "title": "Are you a professional?",
       "subtitle": "Create a free profile, reach local clients, and grow your business on Localia.",
       "cta": "List your business"
-    }
+    },
+    "loadError": "Could not load the page. Please try again."
   },
   "search": {
     "title": "Search professionals",
@@ -271,6 +272,7 @@
   },
   "dashboard": {
     "title": "Provider dashboard",
+    "loadError": "Could not load your dashboard.",
     "nav": {
       "overview": "Overview",
       "profile": "Edit profile",
@@ -361,6 +363,7 @@
   },
   "admin": {
     "title": "Admin",
+    "loadError": "Could not load data. Please try again.",
     "nav": {
       "overview": "Overview",
       "queue": "Review queue",

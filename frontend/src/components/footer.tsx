@@ -39,9 +39,6 @@ export function Footer() {
                   {t("becomePro")}
                 </Link>
               </li>
-              <li>
-                <span className="text-muted-foreground">{t("about")}</span>
-              </li>
             </ul>
           </div>
         </div>

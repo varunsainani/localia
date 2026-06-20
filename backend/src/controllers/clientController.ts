@@ -40,11 +40,16 @@ export const createReview = asyncHandler(async (req, res) => {
     throw new HttpError(409, "errors.review.alreadyReviewed", { code: "ALREADY_REVIEWED" });
   }
 
-  const review = await prisma.review.create({
-    data: { providerId: provider.id, clientId: req.userId!, rating, comment },
-    include: { client: { select: { name: true } } },
+  // Create the review and recompute the provider's aggregate rating atomically,
+  // so a failure between the two can't leave ratingAvg/reviewCount stale.
+  const review = await prisma.$transaction(async (tx) => {
+    const created = await tx.review.create({
+      data: { providerId: provider.id, clientId: req.userId!, rating, comment },
+      include: { client: { select: { name: true } } },
+    });
+    await recomputeRating(provider.id, tx);
+    return created;
   });
-  await recomputeRating(provider.id);
   await logAudit({
     actorId: req.userId,
     action: "review.created",

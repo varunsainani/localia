@@ -10,7 +10,7 @@
     "start": "node dist/index.js",
     "typecheck": "tsc --noEmit",
     "prisma:generate": "prisma generate",
-    "prisma:push": "prisma db push",
+    "prisma:push": "prisma db push && npm run db:fts",
     "db:fts": "prisma db execute --file prisma/fts.sql --schema prisma/schema.prisma",
     "seed": "tsx prisma/seed.ts",
     "postinstall": "prisma generate"

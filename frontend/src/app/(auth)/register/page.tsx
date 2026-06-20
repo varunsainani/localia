@@ -18,6 +18,7 @@ type Role = "CLIENT" | "PROVIDER";
 
 export default function RegisterPage() {
   const t = useTranslations("auth.register");
+  const ta = useTranslations("auth");
   const router = useRouter();
   const { refresh } = useAuth();
   const [role, setRole] = useState<Role>("CLIENT");
@@ -105,7 +106,7 @@ export default function RegisterPage() {
                 required
                 value={form.email}
                 onChange={set("email")}
-                placeholder="you@example.com"
+                placeholder={ta("emailPlaceholder")}
               />
             </label>
             <label className="block space-y-1.5">

@@ -9,7 +9,10 @@ import routes from "./routes";
 
 export function createApp() {
   const app = express();
-  app.set("trust proxy", true);
+  // Trust exactly one proxy hop (e.g. Vercel's edge / a single load balancer)
+  // so req.ip reflects the real client without trusting arbitrary forwarded
+  // chains, which would let clients spoof their IP and bypass rate limiting.
+  app.set("trust proxy", 1);
 
   app.use(helmet());
   app.use(
