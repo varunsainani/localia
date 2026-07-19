@@ -39,9 +39,9 @@ export function brandPinIcon(highlighted = false) {
   });
 }
 
-// Sensible default map center (Latin America) when no points are available.
-export const DEFAULT_CENTER: [number, number] = [-15, -60];
-export const DEFAULT_ZOOM = 3;
+// Sensible default map center (continental US) when no points are available.
+export const DEFAULT_CENTER: [number, number] = [39.5, -98.35];
+export const DEFAULT_ZOOM = 4;
 
 // OSM raster tiles — no API key required.
 export const OSM_TILE_URL = "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";

@@ -1,7 +1,7 @@
 {
   "meta": {
     "title": "Localia — Find trusted local professionals",
-    "description": "Localia is a directory of trusted local professionals across Latin America. Search by category and city, read reviews, and contact pros directly on WhatsApp.",
+    "description": "Localia is a directory of trusted local professionals near you. Search by category and city, read reviews, and contact pros directly on WhatsApp.",
     "ogProvider": "{name} on Localia",
     "providerTitle": "{name} — {category} in {city}",
     "categoryTitle": "{category} professionals",
@@ -111,7 +111,7 @@
     "hero": {
       "badge": "Trusted local professionals",
       "title": "Find the right professional, right where you are",
-      "subtitle": "Search verified pros across Latin America by category and city. Read reviews, see them on the map, and reach out on WhatsApp.",
+      "subtitle": "Search verified pros near you by category and city. Read reviews, see them on the map, and reach out on WhatsApp.",
       "categoryLabel": "What do you need?",
       "categoryPlaceholder": "All categories",
       "cityLabel": "Where?",
